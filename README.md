@@ -42,15 +42,21 @@ Ein kleines, schnelles Desktop-Tool zum \*\*Verkleinern von Bildern\*\* – mit
 
 \- 🧠 \*\*Dependency-Check beim Start\*\* (inkl. Nachfrage \& Auto-Install)
 
+---
 
+\##✅ Unterstützte Dateitypen (Stand jetzt)
+
+JPEG → .jpg, .jpeg
+
+PNG → .png
+
+WebP → .webp
 
 ---
 
-
-
 \## 🖥️ Screenshot (optional)
 
-\*(Hier kannst du später einen Screenshot einfügen)\*
+![Image Resizer Deluxe – Screenshot](screenshot.png)
 
 
 
@@ -186,6 +192,19 @@ drag & drop, presets, tooltips, and a simple GUI built with Python & Tkinter.
 📁 Output in a resized/ subfolder
 
 🧠 Dependency check on startup (with prompt & auto-install)
+
+---
+
+✅ Supported File Types (current)
+
+
+JPEG → .jpg, .jpeg
+
+PNG → .png
+
+WebP → .webp
+
+---
 
 🖥️ Screenshot (optional)
 
