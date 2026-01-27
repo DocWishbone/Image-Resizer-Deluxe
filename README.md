@@ -154,5 +154,98 @@ Dateinamen bleiben unverändert
 
 
 
+E N G L I S H
+
+Image Resizer Deluxe
+Simple and fast image shrinker with drag-and-drop and multi-selection
+
+Image Resizer Deluxe 🖼️✨
+
+A small, fast desktop tool for resizing images – featuring
+
+drag & drop, presets, tooltips, and a simple GUI built with Python & Tkinter.
+
+✨ Features
+
+📂 Drag & Drop (multiple files at once)
+
+🖱️ Classic file selection as a fallback
+
+🎯 Preset buttons (Web, Mail, Social, Print)
+
+ℹ️ Tooltips explaining each preset
+
+🎨 Presets in graduated shades of blue with hover effect
+
+📏 Manual input for maximum width/height
+
+📋 List of all selected files
+
+🧹 “Clear list” button
+
+📁 Output in a resized/ subfolder
+
+🧠 Dependency check on startup (with prompt & auto-install)
+
+🖥️ Screenshot (optional)
+
+(You can add a screenshot here later)
+
+---
+
+📦 Requirements
+
+Python 3.9 or newer
+
+Tkinter (included with most Python installations)
+
+Internet connection on first start (for automatic dependency installation)
+
+---
+
+
+🚀 Installation & Start
+
+python Resizer.py
+
+---
+
+🔧 Dependencies
+
+Pillow – image processing
+
+tkinterdnd2 – drag & drop support
+
+- pip install Pillow tkinterdnd2 (for manual installation if required)
+
+---
+
+🧠 Usage
+
+Select a preset or enter the desired maximum size
+
+Drag images into the window
+
+or use “Select images…”
+
+Click “Resize & save”
+
+Done 🎉
+
+→ Images are saved in the resized/ folder
+
+The aspect ratio is always preserved.
+
+---
+
+📁 Output
+
+The resized images are saved in the subfolder
+
+resized/ (next to the original images)
+
+File names remain unchanged
+
+
 2026 M. Ludwig
 
