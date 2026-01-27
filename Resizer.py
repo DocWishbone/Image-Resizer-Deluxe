@@ -82,6 +82,12 @@ STRINGS = {
         "btn_resize": "Verkleinern & speichern",
         "status_ready": "Bereit.",
         "preset_set": "Preset gesetzt: {w}×{h}",
+        "tips": [
+            "Für Webseiten & CMS (gut genug, nicht zu groß)",
+            "Klein für E-Mail/Chat (schnell, wenig MB)",
+            "Instagram & Social Media (typische Kantenlänge)",
+            "Hohe Auflösung (eher für Print/Archiv)"
+        ]
     },
     "en": {
         "title": f"Image Resizer – Deluxe v{APP_VERSION} - v{APP_AUTHOR}",
@@ -95,7 +101,32 @@ STRINGS = {
         "btn_resize": "Resize & save",
         "status_ready": "Ready.",
         "preset_set": "Preset set: {w}×{h}",
+        "tips": [
+            "For websites & CMS",
+            "Small for Email/Chat",
+            "Instagram & Social Media",
+            "High resolution (Print/Archive)"
+        ]
     },
+    "ru": {
+        "title": f"Изменение размера изображений – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
+        "presets": "Пресеты:",
+        "preset_names": ["Веб", "Почта", "Соцсети", "Печать"],
+        "max_width": "Макс. ширина:",
+        "max_height": "Макс. высота:",
+        "drop_text": "📂 Перетащите файлы сюда (можно несколько)",
+        "btn_pick": "Выбрать изображения…",
+        "btn_clear": "Очистить список",
+        "btn_resize": "Уменьшить и сохранить",
+        "status_ready": "Готово.",
+        "preset_set": "Пресет установлен: {w}×{h}",
+        "tips": [
+            "Для веб-сайтов и CMS",
+            "Маленький для почты/чата",
+            "Instagram и соцсети",
+            "Высокое разрешение (печать)"
+        ]
+    }
 }
 
 CONFIG_FILE = "config.json"
@@ -125,6 +156,9 @@ class ToolTip:
         widget.bind("<Enter>", self.show)
         widget.bind("<Leave>", self.hide)
 
+    def update_text(self, new_text):
+        self.text = new_text
+
     def show(self, _=None):
         if self.tip:
             return
@@ -153,6 +187,7 @@ PRESET_COLORS = [
 LANG_OPTIONS = {
     "DE": "de",
     "EN": "en",
+    "RU": "ru",
 }
 
 # ---------- App ----------
@@ -163,6 +198,7 @@ class ResizerApp:
         self.root = root
         root.minsize(560, 420)
         self.files = []
+        self.tooltips =[]
 
         # Top Inputs
         top = Frame(root)
@@ -194,7 +230,6 @@ class ResizerApp:
         self.preset_buttons = []
 
         # ---------- Presets ----------
-        # Presets-Frame erstellen
         presets_frame = Frame(root)
         presets_frame.grid(row=1, column=0, padx=10, sticky="ew")
 
@@ -203,18 +238,18 @@ class ResizerApp:
 
         # Preset-Werte: Breite, Höhe, Tooltip
         preset_values = [
-            (1200, 1200, "Für Webseiten & CMS (gut genug, nicht zu groß)"),
-            (800, 800, "Klein für E-Mail/Chat (schnell, wenig MB)"),
-            (1080, 1080, "Instagram & Social Media (typische Kantenlänge)"),
-            (3000, 3000, "Hohe Auflösung (eher für Print/Archiv)"),
+            (1200, 1200),
+            (800, 800),
+            (1080, 1080),
+            (3000, 3000),
         ]
 
         # Preset-Buttons erzeugen
         self.preset_buttons = []
-        for i, ((w, h, tip), color) in enumerate(zip(preset_values, PRESET_COLORS)):
+        for i, ((w, h), color) in enumerate(zip(preset_values, PRESET_COLORS)):
             b = Button(
                 presets_frame,
-                text=STRINGS[self.lang.get()]["preset_names"][i],  # Name je nach Sprache
+                text="", # durch apply-language
                 command=lambda w=w, h=h: self.set_preset(w, h),
                 padx=10,
                 background=color,
@@ -225,7 +260,9 @@ class ResizerApp:
             b.pack(side="left", padx=3)
             b.bind("<Enter>", self.preset_hover_enter)
             b.bind("<Leave>", self.preset_hover_leave)
-            ToolTip(b, tip)
+                   
+            tip_obj = ToolTip(b, "") 
+            self.tooltips.append(tip_obj)
             self.preset_buttons.append(b)
 
         # Drop Area
@@ -287,9 +324,15 @@ class ResizerApp:
         self.btn_clear.config(text=t["btn_clear"])
         self.btn_resize.config(text=t["btn_resize"])
         self.status.config(text=t["status_ready"])
-        preset_names = STRINGS[self.lang.get()]["preset_names"]
-        for b, name in zip(self.preset_buttons, preset_names):
+        
+        # Namen der Buttons aktualisieren
+        for b, name in zip(self.preset_buttons, t["preset_names"]):
             b.config(text=name)
+
+        # Tooltips aktualisieren
+        if hasattr(self, 'tooltips'):
+            for tip_obj, new_text in zip(self.tooltips, t["tips"]):
+                tip_obj.update_text(new_text)
 
     def set_status(self, text: str):
         self.status.config(text=text)
