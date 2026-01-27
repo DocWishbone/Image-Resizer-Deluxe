@@ -66,11 +66,9 @@ def check_and_install():
 
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-# ---- HIER aufrufen ----
 if __name__ == "__main__":
     import os
     check_and_install()
-
 
 import os
 from tkinter import (
@@ -80,7 +78,34 @@ from tkinter import filedialog
 from PIL import Image
 
 from tkinterdnd2 import TkinterDnD, DND_FILES
+from tkinter import *
 
+STRINGS = {
+    "de": {
+        "title": "Bilder verkleinern – Deluxe - mlu",
+        "presets": "Presets:",
+        "max_width": "Max. Breite:",
+        "max_height": "Max. Höhe:",
+        "drop_text": "📂 Dateien hier reinziehen (mehrere möglich)",
+        "btn_pick": "Bilder auswählen…",
+        "btn_clear": "Liste leeren",
+        "btn_resize": "Verkleinern & speichern",
+        "status_ready": "Bereit.",
+        "preset_set": "Preset gesetzt: {w}×{h}",
+    },
+    "en": {
+        "title": "Image Resizer – Deluxe - mlu",
+        "presets": "Presets:",
+        "max_width": "Max width:",
+        "max_height": "Max height:",
+        "drop_text": "📂 Drop files here (multiple allowed)",
+        "btn_pick": "Select images…",
+        "btn_clear": "Clear list",
+        "btn_resize": "Resize & save",
+        "status_ready": "Ready.",
+        "preset_set": "Preset set: {w}×{h}",
+    },
+}
 
 # ---------- Tooltip ----------
 class ToolTip:
@@ -124,11 +149,14 @@ PRESET_COLORS = [
     "#4da3ff",  # dunkler
 ]
 
+
+
+
 # ---------- App ----------
 class ResizerApp:
     def __init__(self, root):
+        self.lang = StringVar(value="de")
         self.root = root
-        root.title("Bilder verkleinern (Deluxe) - mlu 26.01.2026")
         root.minsize(560, 420)
 
         self.files = []
@@ -139,15 +167,34 @@ class ResizerApp:
         top.columnconfigure(1, weight=1)
         top.columnconfigure(3, weight=1)
 
-        Label(top, text="Max. Breite:").grid(row=0, column=0, sticky="w")
+        self.lbl_width = Label(top)
+        self.lbl_width.grid(row=0, column=0, sticky="w")
+
+        self.lbl_height = Label(top)
+        self.lbl_height.grid(row=0, column=2, sticky="w")
+        
+        self.lbl_width = Label(top)
+        self.lbl_width.grid(row=0, column=0, sticky="w")
+
         self.width_entry = Entry(top, width=10)
         self.width_entry.insert(0, "1200")
         self.width_entry.grid(row=0, column=1, sticky="w", padx=(6, 20))
 
-        Label(top, text="Max. Höhe:").grid(row=0, column=2, sticky="w")
+        self.lbl_height = Label(top)
+        self.lbl_height.grid(row=0, column=2, sticky="w")
+
         self.height_entry = Entry(top, width=10)
         self.height_entry.insert(0, "1200")
         self.height_entry.grid(row=0, column=3, sticky="w", padx=(6, 0))
+
+        lang_menu = OptionMenu(
+            top,
+            self.lang,
+            "de",
+            "en",
+            command=lambda _: self.apply_language()
+        )
+        lang_menu.grid(row=0, column=4, padx=(15, 0))
 
         # Presets
         presets_frame = Frame(root)
@@ -160,7 +207,8 @@ class ResizerApp:
             ("Druck", 3000, 3000, "Hohe Auflösung (eher für Print/Archiv)"),
         ]
 
-        Label(presets_frame, text="Presets:").pack(side="left", padx=(0, 8))
+        self.lbl_presets = Label(presets_frame)
+        self.lbl_presets.pack(side="left", padx=(0, 8))
 
         for (name, w, h, tip), color in zip(presets, PRESET_COLORS):
             b = Button(
@@ -188,12 +236,11 @@ class ResizerApp:
 
         self.drop_label = Label(
             drop,
-            text="📂 Dateien hier reinziehen (mehrere gleichzeitig möglich)\n"
-                 "Tipp: Shift/Ctrl markieren und zusammen droppen",
             relief="ridge",
             padx=10,
             pady=12
         )
+
         self.drop_label.grid(row=0, column=0, sticky="ew")
 
         self.drop_label.drop_target_register(DND_FILES)
@@ -219,13 +266,36 @@ class ResizerApp:
         btns.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
         btns.columnconfigure(0, weight=1)
 
-        Button(btns, text="Bilder auswählen…", command=self.pick_files).pack(side="left")
-        Button(btns, text="Liste leeren", command=self.clear_files).pack(side="left", padx=8)
-        Button(btns, text="Verkleinern & speichern", command=self.resize_and_save).pack(side="right")
+        self.btn_pick = Button(btns, command=self.pick_files)
+        self.btn_pick.pack(side="left")
+
+        self.btn_clear = Button(btns, command=self.clear_files)
+        self.btn_clear.pack(side="left", padx=8)
+
+        self.btn_resize = Button(btns, command=self.resize_and_save)
+        self.btn_resize.pack(side="right")
 
         # Status
-        self.status = Label(root, text="Bereit.", anchor="w")
+        self.status = Label(root, anchor="w")
         self.status.grid(row=5, column=0, padx=10, pady=(0, 10), sticky="ew")
+        self.apply_language()
+
+    def apply_language(self):
+        t = STRINGS[self.lang.get()]
+
+        self.root.title(t["title"])
+
+        self.lbl_width.config(text=t["max_width"])
+        self.lbl_height.config(text=t["max_height"])
+        self.lbl_presets.config(text=t["presets"])
+
+        self.drop_label.config(text=t["drop_text"])
+
+        self.btn_pick.config(text=t["btn_pick"])
+        self.btn_clear.config(text=t["btn_clear"])
+        self.btn_resize.config(text=t["btn_resize"])
+
+        self.status.config(text=t["status_ready"])
 
     def set_status(self, text: str):
         self.status.config(text=text)
@@ -236,7 +306,8 @@ class ResizerApp:
         self.height_entry.delete(0, END)
         self.width_entry.insert(0, str(w))
         self.height_entry.insert(0, str(h))
-        self.set_status(f"Preset gesetzt: {w}×{h}")
+        t = STRINGS[self.lang.get()]
+        self.set_status(t["preset_set"].format(w=w, h=h))
         
     def preset_hover_enter(self, event):
         event.widget.config(relief="sunken")
