@@ -3,70 +3,85 @@ import importlib
 import subprocess
 import json
 import os
-from tkinter import (
-    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, messagebox, Toplevel, StringVar, OptionMenu
-)
-from tkinter import filedialog
-from PIL import Image
-from tkinterdnd2 import TkinterDnD, DND_FILES
 
 try:
-    from .version import __version__
-    from .version import __author__
+    from .version import __version__, __author__
 except (ImportError, ValueError):
-    from version import __version__
-    from version import __author__
+    try:
+        from version import __version__, __author__
+    except ImportError:
+        __version__, __author__ = "0.0.0", "m. ludwig"
 
-# ---------- Abhängigkeiten prüfen ----------
+APP_VERSION = __version__
+APP_AUTHOR = __author__
+
 REQUIRED = {
     "PIL": "Pillow",
     "tkinterdnd2": "tkinterdnd2",
 }
 
-APP_VERSION = __version__
-APP_AUTHOR = __author__
-
 def check_and_install():
+    if getattr(sys, 'frozen', False):
+        return
+
     missing = []
     for module, package in REQUIRED.items():
         try:
             importlib.import_module(module)
         except ImportError:
             missing.append(package)
+            
     if not missing:
         return
 
-    msg = "Es fehlen folgende Python-Module:\n\n" + "\n".join(f"• {m}" for m in missing) + \
-          "\n\nSollen diese jetzt automatisch installiert werden?\n(Internetverbindung erforderlich)"
     try:
-        from tkinter import Tk, messagebox
+        from tkinter import Tk, messagebox, Label, Toplevel
         root = Tk()
         root.withdraw()
-        install = messagebox.askyesno("Fehlende Abhängigkeiten", msg)
-    except Exception:
-        print(msg)
-        install = input("Installieren? [y/N]: ").strip().lower() == "y"
+        
+        msg = ("Es fehlen folgende Module:\n\n" + 
+               "\n".join(f"• {m}" for m in missing) + 
+               "\n\nSollen diese jetzt automatisch installiert werden?")
+        
+        if not messagebox.askyesno("Installation erforderlich", msg):
+            sys.exit()
 
-    if not install:
-        sys.exit("Abbruch durch Benutzer.")
+        # Lade-Fenster
+        loading = Toplevel(root)
+        loading.title("Bitte warten...")
+        loading.geometry("300x100")
+        # Zentrieren
+        x = (root.winfo_screenwidth() // 2) - 150
+        y = (root.winfo_screenheight() // 2) - 50
+        loading.geometry(f"+{x}+{y}")
+        
+        Label(loading, text="\nInstalliere Abhängigkeiten...", font=("Arial", 10, "bold")).pack()
+        Label(loading, text="Dies kann einen Moment dauern...").pack()
+        loading.update()
 
-    try:
+        # Installation via Pip
         subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
-    except subprocess.CalledProcessError:
-        try:
-            messagebox.showerror("Fehler", "Installation fehlgeschlagen.\nBitte manuell installieren.")
-        except Exception:
-            pass
+        
+        loading.destroy()
+        root.destroy()
+
+        # Neustart FIX: Wir nutzen spawnl statt execl, um Pfadprobleme mit Leerzeichen zu umgehen
+        os.spawnl(os.P_WAIT, sys.executable, f'"{sys.executable}"', *sys.argv)
+        sys.exit()
+        
+    except Exception as e:
+        print(f"Fehler: {e}")
         sys.exit(1)
 
-    try:
-        messagebox.showinfo("Fertig", "Abhängigkeiten wurden installiert.\nDas Programm wird neu gestartet.")
-    except Exception:
-        pass
-
-    os.execl(sys.executable, sys.executable, *sys.argv)
-
 check_and_install()
+
+from tkinter import (
+    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, 
+    messagebox, Toplevel, StringVar, OptionMenu
+)
+from tkinter import filedialog
+from PIL import Image
+from tkinterdnd2 import TkinterDnD, DND_FILES
 
 # ---------- Strings ----------
 STRINGS = {
