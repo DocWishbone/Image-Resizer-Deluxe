@@ -2,7 +2,15 @@ import sys
 import importlib
 import subprocess
 import json
+import os
+from tkinter import (
+    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, messagebox, Toplevel, StringVar, OptionMenu
+)
+from tkinter import filedialog
+from PIL import Image
+from tkinterdnd2 import TkinterDnD, DND_FILES
 
+# ---------- Abhängigkeiten prüfen ----------
 REQUIRED = {
     "PIL": "Pillow",
     "tkinterdnd2": "tkinterdnd2",
@@ -10,81 +18,52 @@ REQUIRED = {
 
 def check_and_install():
     missing = []
-
     for module, package in REQUIRED.items():
         try:
             importlib.import_module(module)
         except ImportError:
             missing.append(package)
-
     if not missing:
-        return  # alles ok
+        return
 
-    msg = (
-        "Es fehlen folgende Python-Module:\n\n"
-        + "\n".join(f"• {m}" for m in missing)
-        + "\n\nSollen diese jetzt automatisch installiert werden?\n\n"
-        + "(Internetverbindung erforderlich)"
-    )
-
-    # GUI-Dialog versuchen
+    msg = "Es fehlen folgende Python-Module:\n\n" + "\n".join(f"• {m}" for m in missing) + \
+          "\n\nSollen diese jetzt automatisch installiert werden?\n(Internetverbindung erforderlich)"
     try:
         from tkinter import Tk, messagebox
         root = Tk()
         root.withdraw()
         install = messagebox.askyesno("Fehlende Abhängigkeiten", msg)
     except Exception:
-        # Fallback Terminal
         print(msg)
         install = input("Installieren? [y/N]: ").strip().lower() == "y"
 
     if not install:
         sys.exit("Abbruch durch Benutzer.")
 
-    # Installation
     try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", *missing]
-        )
+        subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
     except subprocess.CalledProcessError:
         try:
-            messagebox.showerror(
-                "Fehler",
-                "Installation fehlgeschlagen.\nBitte manuell installieren."
-            )
+            messagebox.showerror("Fehler", "Installation fehlgeschlagen.\nBitte manuell installieren.")
         except Exception:
             pass
         sys.exit(1)
 
-    # Erfolg → Neustart
     try:
-        messagebox.showinfo(
-            "Fertig",
-            "Abhängigkeiten wurden installiert.\nDas Programm wird neu gestartet."
-        )
+        messagebox.showinfo("Fertig", "Abhängigkeiten wurden installiert.\nDas Programm wird neu gestartet.")
     except Exception:
         pass
 
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-if __name__ == "__main__":
-    import os
-    check_and_install()
+check_and_install()
 
-import os
-from tkinter import (
-    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, messagebox, Toplevel
-)
-from tkinter import filedialog
-from PIL import Image
-
-from tkinterdnd2 import TkinterDnD, DND_FILES
-from tkinter import *
-
+# ---------- Strings ----------
 STRINGS = {
     "de": {
         "title": "Bilder verkleinern – Deluxe - mlu",
         "presets": "Presets:",
+        "preset_names": ["Web", "Mail", "Social", "Druck"],
         "max_width": "Max. Breite:",
         "max_height": "Max. Höhe:",
         "drop_text": "📂 Dateien hier reinziehen (mehrere möglich)",
@@ -97,6 +76,7 @@ STRINGS = {
     "en": {
         "title": "Image Resizer – Deluxe - mlu",
         "presets": "Presets:",
+        "preset_names": ["Web", "Mail", "Social", "Print"],
         "max_width": "Max width:",
         "max_height": "Max height:",
         "drop_text": "📂 Drop files here (multiple allowed)",
@@ -140,101 +120,91 @@ class ToolTip:
             return
         x = self.widget.winfo_rootx() + 15
         y = self.widget.winfo_rooty() + self.widget.winfo_height() + 10
-
         self.tip = tw = Toplevel(self.widget)
         tw.overrideredirect(True)
         tw.geometry(f"+{x}+{y}")
-
-        Label(
-            tw,
-            text=self.text,
-            background="#ffffe0",
-            relief="solid",
-            borderwidth=1,
-            font=("Arial", 9),
-            padx=6,
-            pady=3,
-        ).pack()
+        Label(tw, text=self.text, background="#ffffe0", relief="solid", borderwidth=1,
+              font=("Arial", 9), padx=6, pady=3).pack()
 
     def hide(self, _=None):
         if self.tip:
             self.tip.destroy()
             self.tip = None
 
+# ---------- Preset Farben ----------
 PRESET_COLORS = [
-    "#cfe9ff",  # sehr hellblau
-    "#a9d6ff",  # hellblau
-    "#7fbfff",  # mittelblau
-    "#4da3ff",  # dunkler
+    "#cfe9ff",
+    "#a9d6ff",
+    "#7fbfff",
+    "#4da3ff",
 ]
 
-
-
+# ---------- Sprachoptionen ----------
+LANG_OPTIONS = {
+    "DE": "de",
+    "EN": "en",
+}
 
 # ---------- App ----------
 class ResizerApp:
     def __init__(self, root):
         cfg = load_config()
         self.lang = StringVar(value=cfg.get("language", "de"))
-
         self.root = root
         root.minsize(560, 420)
-
         self.files = []
 
-        # Top inputs
+        # Top Inputs
         top = Frame(root)
         top.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
         top.columnconfigure(1, weight=1)
         top.columnconfigure(3, weight=1)
 
+        # Breite / Höhe Labels + Entry
         self.lbl_width = Label(top)
         self.lbl_width.grid(row=0, column=0, sticky="w")
-
-        self.lbl_height = Label(top)
-        self.lbl_height.grid(row=0, column=2, sticky="w")
-        
-        self.lbl_width = Label(top)
-        self.lbl_width.grid(row=0, column=0, sticky="w")
-
         self.width_entry = Entry(top, width=10)
         self.width_entry.insert(0, "1200")
-        self.width_entry.grid(row=0, column=1, sticky="w", padx=(6, 20))
+        self.width_entry.grid(row=0, column=1, sticky="w", padx=(6,20))
 
         self.lbl_height = Label(top)
         self.lbl_height.grid(row=0, column=2, sticky="w")
-
         self.height_entry = Entry(top, width=10)
         self.height_entry.insert(0, "1200")
-        self.height_entry.grid(row=0, column=3, sticky="w", padx=(6, 0))
+        self.height_entry.grid(row=0, column=3, sticky="w", padx=(6,0))
 
-        lang_menu = OptionMenu(
-            top,
-            self.lang,
-            "de",
-            "en",
-            command=lambda _: self.apply_language()
-        )
-        lang_menu.grid(row=0, column=4, padx=(15, 0))
+        # --- Sprache Dropdown (nur Text) ---
+        current_flag = next(flag for flag, code in LANG_OPTIONS.items() if code == self.lang.get())
+        self.flag_var = StringVar(value=current_flag)
 
-        # Presets
+        lang_menu = OptionMenu(top, self.flag_var, *LANG_OPTIONS.keys(), command=self.change_language)
+        lang_menu.grid(row=0, column=4, padx=(15,0))
+        lang_menu.config(font=("Arial", 10, "bold"))  # große Schrift für Text-Flags
+
+        self.preset_buttons = []
+
+        # ---------- Presets ----------
+        # Presets-Frame erstellen
         presets_frame = Frame(root)
         presets_frame.grid(row=1, column=0, padx=10, sticky="ew")
 
-        presets = [
-            ("Web", 1200, 1200, "Für Webseiten & CMS (gut genug, nicht zu groß)"),
-            ("Mail", 800, 800, "Klein für E-Mail/Chat (schnell, wenig MB)"),
-            ("Social", 1080, 1080, "Instagram & Social Media (typische Kantenlänge)"),
-            ("Druck", 3000, 3000, "Hohe Auflösung (eher für Print/Archiv)"),
+        self.lbl_presets = Label(presets_frame)
+        self.lbl_presets.pack(side="left", padx=(0,8))
+
+        # Preset-Werte: Breite, Höhe, Tooltip
+        preset_values = [
+            (1200, 1200, "Für Webseiten & CMS (gut genug, nicht zu groß)"),
+            (800, 800, "Klein für E-Mail/Chat (schnell, wenig MB)"),
+            (1080, 1080, "Instagram & Social Media (typische Kantenlänge)"),
+            (3000, 3000, "Hohe Auflösung (eher für Print/Archiv)"),
         ]
 
-        self.lbl_presets = Label(presets_frame)
-        self.lbl_presets.pack(side="left", padx=(0, 8))
-
-        for (name, w, h, tip), color in zip(presets, PRESET_COLORS):
+        # Preset-Buttons erzeugen
+        self.preset_buttons = []
+        for i, ((w, h, tip), color) in enumerate(zip(preset_values, PRESET_COLORS)):
             b = Button(
                 presets_frame,
-                text=name,
+                text=STRINGS[self.lang.get()]["preset_names"][i],  # Name je nach Sprache
                 command=lambda w=w, h=h: self.set_preset(w, h),
                 padx=10,
                 background=color,
@@ -243,40 +213,28 @@ class ResizerApp:
                 borderwidth=1,
             )
             b.pack(side="left", padx=3)
-
-            # Hover
             b.bind("<Enter>", self.preset_hover_enter)
             b.bind("<Leave>", self.preset_hover_leave)
-
             ToolTip(b, tip)
+            self.preset_buttons.append(b)
 
-        # Drop area
+        # Drop Area
         drop = Frame(root)
-        drop.grid(row=2, column=0, padx=10, pady=(10, 6), sticky="ew")
+        drop.grid(row=2, column=0, padx=10, pady=(10,6), sticky="ew")
         drop.columnconfigure(0, weight=1)
-
-        self.drop_label = Label(
-            drop,
-            relief="ridge",
-            padx=10,
-            pady=12
-        )
-
+        self.drop_label = Label(drop, relief="ridge", padx=10, pady=12)
         self.drop_label.grid(row=0, column=0, sticky="ew")
-
         self.drop_label.drop_target_register(DND_FILES)
         self.drop_label.dnd_bind("<<Drop>>", self.on_drop)
 
-        # File list + scrollbar
+        # File List + Scrollbar
         list_frame = Frame(root)
         list_frame.grid(row=3, column=0, padx=10, pady=6, sticky="nsew")
         root.rowconfigure(3, weight=1)
         root.columnconfigure(0, weight=1)
-
         self.listbox = Listbox(list_frame, height=10)
         sb = Scrollbar(list_frame, orient="vertical", command=self.listbox.yview)
         self.listbox.configure(yscrollcommand=sb.set)
-
         self.listbox.grid(row=0, column=0, sticky="nsew")
         sb.grid(row=0, column=1, sticky="ns")
         list_frame.rowconfigure(0, weight=1)
@@ -286,39 +244,42 @@ class ResizerApp:
         btns = Frame(root)
         btns.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
         btns.columnconfigure(0, weight=1)
-
         self.btn_pick = Button(btns, command=self.pick_files)
         self.btn_pick.pack(side="left")
-
         self.btn_clear = Button(btns, command=self.clear_files)
         self.btn_clear.pack(side="left", padx=8)
-
         self.btn_resize = Button(btns, command=self.resize_and_save)
         self.btn_resize.pack(side="right")
 
         # Status
         self.status = Label(root, anchor="w")
-        self.status.grid(row=5, column=0, padx=10, pady=(0, 10), sticky="ew")
+        self.status.grid(row=5, column=0, padx=10, pady=(0,10), sticky="ew")
+
+        # Sprache anwenden
         self.apply_language()
-        
+        save_config({"language": self.lang.get()})
+
+    # --- Methoden ---
+    def change_language(self, selected_flag):
+        code = LANG_OPTIONS[selected_flag]
+        self.lang.set(code)
+        self.apply_language()
+        save_config({"language": code})
+
     def apply_language(self):
         t = STRINGS[self.lang.get()]
-
         self.root.title(t["title"])
-
         self.lbl_width.config(text=t["max_width"])
         self.lbl_height.config(text=t["max_height"])
         self.lbl_presets.config(text=t["presets"])
-
         self.drop_label.config(text=t["drop_text"])
-
         self.btn_pick.config(text=t["btn_pick"])
         self.btn_clear.config(text=t["btn_clear"])
         self.btn_resize.config(text=t["btn_resize"])
-
         self.status.config(text=t["status_ready"])
-        
-        save_config({"language": self.lang.get()})
+        preset_names = STRINGS[self.lang.get()]["preset_names"]
+        for b, name in zip(self.preset_buttons, preset_names):
+            b.config(text=name)
 
     def set_status(self, text: str):
         self.status.config(text=text)
@@ -331,7 +292,7 @@ class ResizerApp:
         self.height_entry.insert(0, str(h))
         t = STRINGS[self.lang.get()]
         self.set_status(t["preset_set"].format(w=w, h=h))
-        
+
     def preset_hover_enter(self, event):
         event.widget.config(relief="sunken")
 
@@ -339,27 +300,14 @@ class ResizerApp:
         event.widget.config(relief="raised")
 
     def normalize_dnd_files(self, data: str):
-        """
-        tkinterdnd2 liefert je nach OS z.B.:
-          - "C:/a.jpg C:/b.jpg"
-          - "{C:/my file.jpg} {C:/other.png}"
-        splitlist kann das i.d.R. sauber.
-        """
         files = self.root.tk.splitlist(data)
-        # Optional: Ordner rausfiltern / erlauben? -> hier nur Dateien
-        out = []
-        for f in files:
-            f = f.strip()
-            if os.path.isfile(f):
-                out.append(f)
-        return out
+        return [f.strip() for f in files if os.path.isfile(f.strip())]
 
     def add_files(self, paths):
         added = 0
         for p in paths:
             p = os.path.abspath(p)
             if p not in self.files:
-                # einfache Filterung auf Bildendungen
                 ext = os.path.splitext(p)[1].lower()
                 if ext in [".jpg", ".jpeg", ".png", ".webp"]:
                     self.files.append(p)
@@ -375,10 +323,7 @@ class ResizerApp:
         self.add_files(paths)
 
     def pick_files(self):
-        paths = filedialog.askopenfilenames(
-            title="Bilder auswählen",
-            filetypes=[("Images", "*.jpg *.jpeg *.png *.webp")]
-        )
+        paths = filedialog.askopenfilenames(title="Bilder auswählen", filetypes=[("Images", "*.jpg *.jpeg *.png *.webp")])
         if paths:
             self.add_files(paths)
 
@@ -391,7 +336,6 @@ class ResizerApp:
         if not self.files:
             messagebox.showwarning("Hinweis", "Keine Dateien ausgewählt.")
             return
-
         try:
             max_w = int(self.width_entry.get())
             max_h = int(self.height_entry.get())
@@ -400,28 +344,22 @@ class ResizerApp:
         except ValueError:
             messagebox.showerror("Fehler", "Bitte gültige positive Zahlen für Breite/Höhe eingeben.")
             return
-
         out_dir = os.path.join(os.path.dirname(self.files[0]), "resized")
         os.makedirs(out_dir, exist_ok=True)
-
         ok, fail = 0, 0
         for f in self.files:
             try:
                 with Image.open(f) as img:
                     img.thumbnail((max_w, max_h))
-                    out_path = os.path.join(out_dir, os.path.basename(f))
-                    img.save(out_path)
+                    img.save(os.path.join(out_dir, os.path.basename(f)))
                 ok += 1
                 self.set_status(f"Verarbeitet: {ok}/{len(self.files)}")
             except Exception:
                 fail += 1
-
-        messagebox.showinfo(
-            "Fertig",
-            f"Gespeichert in:\n{out_dir}\n\nOK: {ok}\nFehler: {fail}"
-        )
+        messagebox.showinfo("Fertig", f"Gespeichert in:\n{out_dir}\n\nOK: {ok}\nFehler: {fail}")
         self.set_status("Bereit.")
 
+# ---------- Main ----------
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
     app = ResizerApp(root)
