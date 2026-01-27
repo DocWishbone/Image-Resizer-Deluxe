@@ -1,6 +1,7 @@
 import sys
 import importlib
 import subprocess
+import json
 
 REQUIRED = {
     "PIL": "Pillow",
@@ -107,6 +108,24 @@ STRINGS = {
     },
 }
 
+CONFIG_FILE = "config.json"
+
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        return {}
+    try:
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def save_config(data: dict):
+    try:
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
+
 # ---------- Tooltip ----------
 class ToolTip:
     def __init__(self, widget, text: str):
@@ -155,7 +174,9 @@ PRESET_COLORS = [
 # ---------- App ----------
 class ResizerApp:
     def __init__(self, root):
-        self.lang = StringVar(value="de")
+        cfg = load_config()
+        self.lang = StringVar(value=cfg.get("language", "de"))
+
         self.root = root
         root.minsize(560, 420)
 
@@ -279,7 +300,7 @@ class ResizerApp:
         self.status = Label(root, anchor="w")
         self.status.grid(row=5, column=0, padx=10, pady=(0, 10), sticky="ew")
         self.apply_language()
-
+        
     def apply_language(self):
         t = STRINGS[self.lang.get()]
 
@@ -296,6 +317,8 @@ class ResizerApp:
         self.btn_resize.config(text=t["btn_resize"])
 
         self.status.config(text=t["status_ready"])
+        
+        save_config({"language": self.lang.get()})
 
     def set_status(self, text: str):
         self.status.config(text=text)
@@ -398,7 +421,6 @@ class ResizerApp:
             f"Gespeichert in:\n{out_dir}\n\nOK: {ok}\nFehler: {fail}"
         )
         self.set_status("Bereit.")
-
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
