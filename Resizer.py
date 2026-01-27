@@ -10,11 +10,21 @@ from tkinter import filedialog
 from PIL import Image
 from tkinterdnd2 import TkinterDnD, DND_FILES
 
+try:
+    from .version import __version__
+    from .version import __author__
+except (ImportError, ValueError):
+    from version import __version__
+    from version import __author__
+
 # ---------- Abhängigkeiten prüfen ----------
 REQUIRED = {
     "PIL": "Pillow",
     "tkinterdnd2": "tkinterdnd2",
 }
+
+APP_VERSION = __version__
+APP_AUTHOR = __author__
 
 def check_and_install():
     missing = []
@@ -61,7 +71,7 @@ check_and_install()
 # ---------- Strings ----------
 STRINGS = {
     "de": {
-        "title": "Bilder verkleinern – Deluxe - mlu",
+        "title": f"Bilder verkleinern – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
         "preset_names": ["Web", "Mail", "Social", "Druck"],
         "max_width": "Max. Breite:",
@@ -74,7 +84,7 @@ STRINGS = {
         "preset_set": "Preset gesetzt: {w}×{h}",
     },
     "en": {
-        "title": "Image Resizer – Deluxe - mlu",
+        "title": f"Image Resizer – Deluxe v{APP_VERSION} - v{APP_AUTHOR}",
         "presets": "Presets:",
         "preset_names": ["Web", "Mail", "Social", "Print"],
         "max_width": "Max width:",
