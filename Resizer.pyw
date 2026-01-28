@@ -4,16 +4,19 @@ import subprocess
 import json
 import os
 
-try:
-    from .version import __version__, __author__
-except (ImportError, ValueError):
+def get_version():
     try:
-        from version import __version__, __author__
-    except ImportError:
-        __version__, __author__ = "0.0.0", "m. ludwig"
+        # Falls es als EXE läuft, nehmen wir den Dateinamen (z.B. Image_Resizer_v1.4.0.exe)
+        exe_name = os.path.basename(sys.executable)
+        if "v" in exe_name:
+            # Extrahiert alles nach dem 'v'
+            return exe_name.split("_v")[-1].replace(".exe", "")
+    except:
+        pass
+    return "DEVELOPER-EDITION" # Fallback, falls man das Skript direkt in Python startet
 
-APP_VERSION = __version__
-APP_AUTHOR = __author__
+APP_VERSION = get_version()
+APP_AUTHOR = "m. ludwig"
 
 REQUIRED = {
     "PIL": "Pillow",

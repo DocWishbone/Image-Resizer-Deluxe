@@ -25,6 +25,7 @@ INFO: Es wird eine config.json im Startverzeichnis des Programms angelegt.
 \# GitHub
 
 ![Build Status](https://github.com/DocWishbone/Image-Resizer-Deluxe/actions/workflows/build.yml/badge.svg)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/DocWishbone/Image-Resizer-Deluxe)
 
 
 ---
