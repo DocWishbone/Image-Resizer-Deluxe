@@ -82,6 +82,7 @@ from tkinter import (
 from tkinter import filedialog
 from PIL import Image
 from tkinterdnd2 import TkinterDnD, DND_FILES
+from PIL import Image, ImageTk, ImageOps
 
 # ---------- Strings ----------
 STRINGS = {
@@ -477,14 +478,25 @@ class ResizerApp:
         ok, fail = 0, 0
         for f in self.files:
             try:
-                with Image.open(f) as img:
-                    img.thumbnail((max_w, max_h))
-                    img.save(os.path.join(out_dir, os.path.basename(f)))
+                img = Image.open(f)
+                img = ImageOps.exif_transpose(img)
+                img.thumbnail((max_w, max_h))
+                
+                output_path = os.path.join(out_dir, os.path.basename(f))
+                
+                # OPTIMIERUNG: 
+                # Wir speichern OHNE die alten EXIF-Daten (damit Windows sie neu generieren kann)
+                # und setzen 'keep_rgb', um Farbraum-Probleme zu vermeiden.
+                img.save(output_path, quality=95, subsampling=0, optimize=True)
+                
+                img.close()
                 ok += 1
                 self.set_status(f"Verarbeitet: {ok}/{len(self.files)}")
-            except Exception:
+            except Exception as e:
+                print(f"Fehler bei {f}: {e}") # Das hilft dir beim Debuggen im Terminal
                 fail += 1
         messagebox.showinfo("Fertig", f"Gespeichert in:\n{out_dir}\n\nOK: {ok}\nFehler: {fail}")
+        os.startfile(out_dir)
         self.set_status("Bereit.")
 
 # ---------- Main ----------
