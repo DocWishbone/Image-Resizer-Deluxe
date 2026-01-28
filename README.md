@@ -1,12 +1,14 @@
 # Image Resizer Deluxe
 
+We just needed a small and simple Image-Resizer in our company. So here it is ....
+
 Simple and fast Image Shrinker with Drag'n'Drop and multi-selection
 
 
 
 \# Image Resizer Deluxe 🖼️✨
 
-
+Wir brauchten auf die Schnelle einen kleinen und unkomplizierten Bild-Verkleinerer. Hier ist er ....
 
 Ein kleines, schnelles Desktop-Tool zum \*\*Verkleinern von Bildern\*\* – mit
 
