@@ -1,4 +1,6 @@
 __pycache__/
+dist/
+build/
 *.py[cod]
 *$py.class
 
@@ -20,3 +22,4 @@ Thumbs.db
 *.png
 PNG2ICO.py
 *.bat
+*.spec
