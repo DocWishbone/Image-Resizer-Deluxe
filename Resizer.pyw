@@ -141,6 +141,63 @@ STRINGS = {
             "Instagram и соцсети",
             "Высокое разрешение (печать)"
         ]
+    },
+    "es": {
+        "title": f"Redimensionar imágenes – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
+        "presets": "Ajustes:",
+        "preset_names": ["Web", "Correo", "Social", "Imprimir"],
+        "max_width": "Ancho máx:",
+        "max_height": "Alto máx:",
+        "drop_text": "📂 Suelte los archivos aquí (se permiten varios)",
+        "btn_pick": "Seleccionar imágenes…",
+        "btn_clear": "Limpiar lista",
+        "btn_resize": "Redimensionar y guardar",
+        "status_ready": "Listo.",
+        "preset_set": "Ajuste establecido: {w}×{h}",
+        "tips": [
+            "Para sitios web y CMS",
+            "Pequeño para correo/chat",
+            "Instagram y redes sociales",
+            "Alta resolución (impresión)"
+        ]
+    },
+    "fr": {
+        "title": f"Redimensionner les images – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
+        "presets": "Préréglages :",
+        "preset_names": ["Web", "E-mail", "Social", "Imprimer"],
+        "max_width": "Largeur max :",
+        "max_height": "Hauteur max :",
+        "drop_text": "📂 Déposez les fichiers ici (plusieurs possibles)",
+        "btn_pick": "Sélectionner des images…",
+        "btn_clear": "Effacer la liste",
+        "btn_resize": "Redimensionner et enregistrer",
+        "status_ready": "Prêt.",
+        "preset_set": "Préréglage défini : {w}×{h}",
+        "tips": [
+            "Pour sites web et CMS",
+            "Petit pour e-mail/chat",
+            "Instagram et réseaux sociaux",
+            "Haute résolution (impression)"
+        ]
+    },
+    "it": {
+        "title": f"Ridimensiona immagini – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
+        "presets": "Predefiniti:",
+        "preset_names": ["Web", "Email", "Social", "Stampa"],
+        "max_width": "Larghezza max:",
+        "max_height": "Altezza max:",
+        "drop_text": "📂 Trascina i file qui (anche multipli)",
+        "btn_pick": "Seleziona immagini…",
+        "btn_clear": "Svuota lista",
+        "btn_resize": "Ridimensiona e salva",
+        "status_ready": "Pronto.",
+        "preset_set": "Predefinito impostato: {w}×{h}",
+        "tips": [
+            "Per siti web e CMS",
+            "Piccolo per email/chat",
+            "Instagram e social media",
+            "Alta risoluzione (stampa)"
+        ]
     }
 }
 
@@ -203,6 +260,9 @@ LANG_OPTIONS = {
     "DE": "de",
     "EN": "en",
     "RU": "ru",
+    "ES": "es",
+    "FR": "fr",
+    "IT": "it",
 }
 
 # ---------- App ----------
