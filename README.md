@@ -58,7 +58,7 @@ WebP → .webp
 
 \## 🖥️ Screenshot (optional)
 
-![Image Resizer Deluxe – Screenshot](screenshot.png)
+![Image Resizer Deluxe – Screenshot](Screenshot.png)
 
 
 
