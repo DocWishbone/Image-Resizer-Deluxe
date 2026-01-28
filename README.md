@@ -15,6 +15,10 @@ Ein kleines, schnelles Desktop-Tool zum \*\*Verkleinern von Bildern\*\* – mit
 \*\*Drag \& Drop\*\*, \*\*Presets\*\*, \*\*Tooltips\*\* und einer \*\*einfachen GUI\*\* auf Basis von Python \& Tkinter.
 
 
+\# GitHub
+
+![Build Status](https://github.com/DocWishbone/Image-Resizer-Deluxe/actions/workflows/build.yml/badge.svg)
+
 
 ---
 
