@@ -28,7 +28,7 @@ jobs:
 
     - name: EXE erstellen
       run: |
-        python -m PyInstaller --noconsole --onefile --collect-all tkinterdnd2 --name "Image_Resizer_${{ github.ref_name }}" --icon="app_icon.ico" main.py
+        python -m PyInstaller --noconsole --onefile --collect-all tkinterdnd2 --name "Image_Resizer_${{ github.ref_name }}" --icon="app_icon.ico" Resizer.pyw
 
     - name: Release erstellen
       uses: softprops/action-gh-release@v2
