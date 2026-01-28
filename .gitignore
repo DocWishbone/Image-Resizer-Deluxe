@@ -18,7 +18,6 @@ env/
 Thumbs.db
 
 *.log
-*.ico
 *.png
 PNG2ICO.py
 *.bat
