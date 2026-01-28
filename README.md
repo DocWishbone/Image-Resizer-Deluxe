@@ -2,7 +2,9 @@
 
 We just needed a small and simple Image-Resizer in our company. So here it is ....
 
-Simple and fast Image Shrinker with Drag'n'Drop and multi-selection
+Simple and fast Image Shrinker with Drag'n'Drop and multi-selection.
+
+6 Languages (DE, EN, RU, ES, FR, IT)
 
 
 
@@ -14,6 +16,7 @@ Ein kleines, schnelles Desktop-Tool zum \*\*Verkleinern von Bildern\*\* – mit
 
 \*\*Drag \& Drop\*\*, \*\*Presets\*\*, \*\*Tooltips\*\* und einer \*\*einfachen GUI\*\* auf Basis von Python \& Tkinter.
 
+6 Sprachen (DE, EN, RU, ES, FR, IT)
 
 \# GitHub
 
