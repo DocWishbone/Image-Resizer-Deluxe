@@ -88,7 +88,7 @@ STRINGS = {
     "de": {
         "title": f"Bilder verkleinern – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
-        "preset_names": ["Web", "Mail", "Social", "Druck"],
+        "preset_names": ["Mail", "Social", "Web", "Druck"],
         "max_width": "Max. Breite:",
         "max_height": "Max. Höhe:",
         "drop_text": "📂 Dateien hier reinziehen (mehrere möglich)",
@@ -98,16 +98,16 @@ STRINGS = {
         "status_ready": "Bereit.",
         "preset_set": "Preset gesetzt: {w}×{h}",
         "tips": [
-            "Für Webseiten & CMS (gut genug, nicht zu groß)",
             "Klein für E-Mail/Chat (schnell, wenig MB)",
             "Instagram & Social Media (typische Kantenlänge)",
+            "Für Webseiten & CMS (gut genug, nicht zu groß)",
             "Hohe Auflösung (eher für Print/Archiv)"
         ]
     },
     "en": {
-        "title": f"Image Resizer – Deluxe v{APP_VERSION} - v{APP_AUTHOR}",
+        "title": f"Image Resizer – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
-        "preset_names": ["Web", "Mail", "Social", "Print"],
+        "preset_names": ["Mail", "Social", "Web", "Print"],
         "max_width": "Max width:",
         "max_height": "Max height:",
         "drop_text": "📂 Drop files here (multiple allowed)",
@@ -117,16 +117,16 @@ STRINGS = {
         "status_ready": "Ready.",
         "preset_set": "Preset set: {w}×{h}",
         "tips": [
-            "For websites & CMS",
             "Small for Email/Chat",
             "Instagram & Social Media",
+            "For websites & CMS",
             "High resolution (Print/Archive)"
         ]
     },
     "ru": {
         "title": f"Изменение размера изображений – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Пресеты:",
-        "preset_names": ["Веб", "Почта", "Соцсети", "Печать"],
+        "preset_names": ["Почта", "Соцсети", "Веб", "Печать"],
         "max_width": "Макс. ширина:",
         "max_height": "Макс. высота:",
         "drop_text": "📂 Перетащите файлы сюда (можно несколько)",
@@ -136,16 +136,16 @@ STRINGS = {
         "status_ready": "Готово.",
         "preset_set": "Пресет установлен: {w}×{h}",
         "tips": [
-            "Для веб-сайтов и CMS",
             "Маленький для почты/чата",
             "Instagram и соцсети",
+            "Для веб-сайтов и CMS",
             "Высокое разрешение (печать)"
         ]
     },
     "es": {
         "title": f"Redimensionar imágenes – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Ajustes:",
-        "preset_names": ["Web", "Correo", "Social", "Imprimir"],
+        "preset_names": ["Correo", "Social", "Web", "Imprimir"],
         "max_width": "Ancho máx:",
         "max_height": "Alto máx:",
         "drop_text": "📂 Suelte los archivos aquí (se permiten varios)",
@@ -155,16 +155,16 @@ STRINGS = {
         "status_ready": "Listo.",
         "preset_set": "Ajuste establecido: {w}×{h}",
         "tips": [
-            "Para sitios web y CMS",
             "Pequeño para correo/chat",
             "Instagram y redes sociales",
+            "Para sitios web y CMS",
             "Alta resolución (impresión)"
         ]
     },
     "fr": {
         "title": f"Redimensionner les images – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Préréglages :",
-        "preset_names": ["Web", "E-mail", "Social", "Imprimer"],
+        "preset_names": ["E-mail", "Social", "Web", "Imprimer"],
         "max_width": "Largeur max :",
         "max_height": "Hauteur max :",
         "drop_text": "📂 Déposez les fichiers ici (plusieurs possibles)",
@@ -174,16 +174,16 @@ STRINGS = {
         "status_ready": "Prêt.",
         "preset_set": "Préréglage défini : {w}×{h}",
         "tips": [
-            "Pour sites web et CMS",
             "Petit pour e-mail/chat",
             "Instagram et réseaux sociaux",
+            "Pour sites web et CMS",
             "Haute résolution (impression)"
         ]
     },
     "it": {
         "title": f"Ridimensiona immagini – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Predefiniti:",
-        "preset_names": ["Web", "Email", "Social", "Stampa"],
+        "preset_names": ["Email", "Social", "Web", "Stampa"],
         "max_width": "Larghezza max:",
         "max_height": "Altezza max:",
         "drop_text": "📂 Trascina i file qui (anche multipli)",
@@ -193,9 +193,9 @@ STRINGS = {
         "status_ready": "Pronto.",
         "preset_set": "Predefinito impostato: {w}×{h}",
         "tips": [
-            "Per siti web e CMS",
             "Piccolo per email/chat",
             "Instagram e social media",
+            "Per siti web e CMS",
             "Alta risoluzione (stampa)"
         ]
     }
@@ -313,10 +313,10 @@ class ResizerApp:
 
         # Preset-Werte: Breite, Höhe, Tooltip
         preset_values = [
-            (1200, 1200),
-            (800, 800),
-            (1080, 1080),
-            (3000, 3000),
+            (800, 800),    # Mail (Klein)
+            (1080, 1080),  # Social
+            (1200, 1200),  # Web
+            (3000, 3000),  # Druck (Groß)
         ]
 
         # Preset-Buttons erzeugen
