@@ -1,3 +1,4 @@
+# Trigger Update
 name: Build and Release EXE
 
 on:
