@@ -344,10 +344,10 @@ class ResizerApp:
         self.preset_buttons = []
 
         # ---------- Presets ----------
-        presets_frame = Frame(root)
-        presets_frame.grid(row=2, column=0, padx=10, sticky="ew")
+        self.presets_frame = Frame(root)
+        self.presets_frame.grid(row=2, column=0, padx=10, sticky="ew")
 
-        self.lbl_presets = Label(presets_frame)
+        self.lbl_presets = Label(self.presets_frame)
         self.lbl_presets.pack(side="left", padx=(0,8))
 
         preset_values = [(800, 800), (1080, 1080), (1200, 1200), (3000, 3000)]
@@ -355,7 +355,7 @@ class ResizerApp:
         self.preset_buttons = []
         for i, ((w, h), color) in enumerate(zip(preset_values, PRESET_COLORS)):
             b = Button(
-                presets_frame,
+                self.presets_frame,
                 text="", 
                 command=lambda w=w, h=h: self.set_preset(w, h),
                 padx=10,
@@ -461,8 +461,16 @@ class ResizerApp:
         t = STRINGS[self.lang.get()]
         if self.mode.get() == "resize":
             self.btn_resize.config(text=t["btn_resize"])
+            # Presets und Eingabefelder aktivieren
+            self.presets_frame.grid() 
+            self.width_entry.config(state="normal")
+            self.height_entry.config(state="normal")
         else:
             self.btn_resize.config(text=t["btn_ico"])
+            # Presets verstecken und Eingabefelder ausgrauen
+            self.presets_frame.grid_remove() 
+            self.width_entry.config(state="disabled")
+            self.height_entry.config(state="disabled")
 
     def convert_to_ico(self, file_paths): # NEU: ICO Logik
         if not file_paths:
