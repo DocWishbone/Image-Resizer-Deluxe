@@ -80,7 +80,7 @@ check_and_install()
 
 from tkinter import (
     Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, 
-    messagebox, Toplevel, StringVar, OptionMenu
+    messagebox, Toplevel, StringVar, OptionMenu, Radiobutton # Radiobutton hinzugefügt
 )
 from tkinter import filedialog
 from PIL import Image
@@ -95,10 +95,13 @@ STRINGS = {
         "preset_names": ["Mail", "Social", "Web", "Druck"],
         "max_width": "Max. Breite:",
         "max_height": "Max. Höhe:",
+        "mode_resize": "Bilder verkleinern",
+        "mode_ico": "ICO erstellen (Multi-Size)",
         "drop_text": "📂 Dateien hier reinziehen (mehrere möglich)",
         "btn_pick": "Bilder auswählen…",
         "btn_clear": "Liste leeren",
         "btn_resize": "Verkleinern & speichern",
+        "btn_ico": "Icons erstellen",
         "status_ready": "Bereit.",
         "preset_set": "Preset gesetzt: {w}×{h}",
         "tips": [
@@ -114,10 +117,13 @@ STRINGS = {
         "preset_names": ["Mail", "Social", "Web", "Print"],
         "max_width": "Max width:",
         "max_height": "Max height:",
+        "mode_resize": "Resize images",
+        "mode_ico": "Create ICO (Multi-Size)",
         "drop_text": "📂 Drop files here (multiple allowed)",
         "btn_pick": "Select images…",
         "btn_clear": "Clear list",
         "btn_resize": "Resize & save",
+        "btn_ico": "Create Icons",
         "status_ready": "Ready.",
         "preset_set": "Preset set: {w}×{h}",
         "tips": [
@@ -133,17 +139,20 @@ STRINGS = {
         "preset_names": ["Почта", "Соцсети", "Веб", "Печать"],
         "max_width": "Макс. ширина:",
         "max_height": "Макс. высота:",
-        "drop_text": "📂 Перетащите файлы сюда (можно несколько)",
+        "mode_resize": "Изменить размер",
+        "mode_ico": "Создать ICO",
+        "drop_text": "📂 Перетащите файлы сюда",
         "btn_pick": "Выбрать изображения…",
         "btn_clear": "Очистить список",
-        "btn_resize": "Уменьшить и сохранить",
+        "btn_resize": "Изменить и сохранить",
+        "btn_ico": "Создать иконки",
         "status_ready": "Готово.",
         "preset_set": "Пресет установлен: {w}×{h}",
         "tips": [
-            "Маленький для почты/чата",
-            "Instagram и соцсети",
-            "Для веб-сайтов и CMS",
-            "Высокое разрешение (печать)"
+            "Маленький для почты",
+            "Соцсети (Instagram и др.)",
+            "Для веб-сайтов",
+            "Высокое качество (печать)"
         ]
     },
     "es": {
@@ -152,17 +161,20 @@ STRINGS = {
         "preset_names": ["Correo", "Social", "Web", "Imprimir"],
         "max_width": "Ancho máx:",
         "max_height": "Alto máx:",
-        "drop_text": "📂 Suelte los archivos aquí (se permiten varios)",
+        "mode_resize": "Redimensionar",
+        "mode_ico": "Crear ICO",
+        "drop_text": "📂 Suelte los archivos aquí",
         "btn_pick": "Seleccionar imágenes…",
         "btn_clear": "Limpiar lista",
         "btn_resize": "Redimensionar y guardar",
+        "btn_ico": "Crear iconos",
         "status_ready": "Listo.",
         "preset_set": "Ajuste establecido: {w}×{h}",
         "tips": [
-            "Pequeño para correo/chat",
-            "Instagram y redes sociales",
-            "Para sitios web y CMS",
-            "Alta resolución (impresión)"
+            "Pequeño para correo",
+            "Redes sociales",
+            "Sitios web",
+            "Alta resolución"
         ]
     },
     "fr": {
@@ -171,17 +183,20 @@ STRINGS = {
         "preset_names": ["E-mail", "Social", "Web", "Imprimer"],
         "max_width": "Largeur max :",
         "max_height": "Hauteur max :",
-        "drop_text": "📂 Déposez les fichiers ici (plusieurs possibles)",
+        "mode_resize": "Redimensionner",
+        "mode_ico": "Créer ICO",
+        "drop_text": "📂 Déposez les fichiers ici",
         "btn_pick": "Sélectionner des images…",
         "btn_clear": "Effacer la liste",
-        "btn_resize": "Redimensionner et enregistrer",
+        "btn_resize": "Redimensionner et sauver",
+        "btn_ico": "Créer des icônes",
         "status_ready": "Prêt.",
         "preset_set": "Préréglage défini : {w}×{h}",
         "tips": [
-            "Petit pour e-mail/chat",
-            "Instagram et réseaux sociaux",
-            "Pour sites web et CMS",
-            "Haute résolution (impression)"
+            "Petit pour email",
+            "Réseaux sociaux",
+            "Sites web",
+            "Haute résolution"
         ]
     },
     "it": {
@@ -190,17 +205,20 @@ STRINGS = {
         "preset_names": ["Email", "Social", "Web", "Stampa"],
         "max_width": "Larghezza max:",
         "max_height": "Altezza max:",
-        "drop_text": "📂 Trascina i file qui (anche multipli)",
+        "mode_resize": "Ridimensiona",
+        "mode_ico": "Crea ICO",
+        "drop_text": "📂 Trascina i file qui",
         "btn_pick": "Seleziona immagini…",
         "btn_clear": "Svuota lista",
         "btn_resize": "Ridimensiona e salva",
+        "btn_ico": "Crea icone",
         "status_ready": "Pronto.",
         "preset_set": "Predefinito impostato: {w}×{h}",
         "tips": [
-            "Piccolo per email/chat",
-            "Instagram e social media",
-            "Per siti web e CMS",
-            "Alta risoluzione (stampa)"
+            "Piccolo per email",
+            "Social media",
+            "Siti web",
+            "Alta risoluzione"
         ]
     }
 }
@@ -268,20 +286,37 @@ LANG_OPTIONS = {
     "FR": "fr",
     "IT": "it",
 }
-
+        
 # ---------- App ----------
 class ResizerApp:
     def __init__(self, root):
         cfg = load_config()
         self.lang = StringVar(value=cfg.get("language", "de"))
         self.root = root
-        root.minsize(560, 420)
+        root.geometry("500x500") # Breite angepasst
+        root.minsize(600, 450)
         self.files = []
-        self.tooltips =[]
+        self.tooltips = []
+        self.mode = StringVar(value="resize") # Modus-Variable
+
+        # --- Modus Umschalter ---
+        mode_frame = Frame(self.root)
+        mode_frame.grid(row=0, column=0, padx=10, pady=(10,0), sticky="ew")
+        
+        # In der __init__
+        self.rb_resize = Radiobutton(mode_frame, text="", variable=self.mode, 
+                                    value="resize", font=("Arial", 10), 
+                                    command=self.update_button_text) # Command hinzugefügt
+        self.rb_resize.pack(side="left", padx=10)
+
+        self.rb_ico = Radiobutton(mode_frame, text="", variable=self.mode, 
+                                 value="ico", font=("Arial", 10), 
+                                 command=self.update_button_text) # Command hinzugefügt
+        self.rb_ico.pack(side="left", padx=10)
 
         # Top Inputs
         top = Frame(root)
-        top.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        top.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
         top.columnconfigure(1, weight=1)
         top.columnconfigure(3, weight=1)
 
@@ -298,37 +333,30 @@ class ResizerApp:
         self.height_entry.insert(0, "1200")
         self.height_entry.grid(row=0, column=3, sticky="w", padx=(6,0))
 
-        # --- Sprache Dropdown (nur Text) ---
+        # --- Sprache Dropdown ---
         current_flag = next(flag for flag, code in LANG_OPTIONS.items() if code == self.lang.get())
         self.flag_var = StringVar(value=current_flag)
 
         lang_menu = OptionMenu(top, self.flag_var, *LANG_OPTIONS.keys(), command=self.change_language)
         lang_menu.grid(row=0, column=4, padx=(15,0))
-        lang_menu.config(font=("Arial", 10, "bold"))  # große Schrift für Text-Flags
+        lang_menu.config(font=("Arial", 10, "bold"))
 
         self.preset_buttons = []
 
         # ---------- Presets ----------
         presets_frame = Frame(root)
-        presets_frame.grid(row=1, column=0, padx=10, sticky="ew")
+        presets_frame.grid(row=2, column=0, padx=10, sticky="ew")
 
         self.lbl_presets = Label(presets_frame)
         self.lbl_presets.pack(side="left", padx=(0,8))
 
-        # Preset-Werte: Breite, Höhe, Tooltip
-        preset_values = [
-            (800, 800),    # Mail (Klein)
-            (1080, 1080),  # Social
-            (1200, 1200),  # Web
-            (3000, 3000),  # Druck (Groß)
-        ]
+        preset_values = [(800, 800), (1080, 1080), (1200, 1200), (3000, 3000)]
 
-        # Preset-Buttons erzeugen
         self.preset_buttons = []
         for i, ((w, h), color) in enumerate(zip(preset_values, PRESET_COLORS)):
             b = Button(
                 presets_frame,
-                text="", # durch apply-language
+                text="", 
                 command=lambda w=w, h=h: self.set_preset(w, h),
                 padx=10,
                 background=color,
@@ -339,14 +367,14 @@ class ResizerApp:
             b.pack(side="left", padx=3)
             b.bind("<Enter>", self.preset_hover_enter)
             b.bind("<Leave>", self.preset_hover_leave)
-                   
+                    
             tip_obj = ToolTip(b, "") 
             self.tooltips.append(tip_obj)
             self.preset_buttons.append(b)
 
         # Drop Area
         drop = Frame(root)
-        drop.grid(row=2, column=0, padx=10, pady=(10,6), sticky="ew")
+        drop.grid(row=3, column=0, padx=10, pady=(10,6), sticky="ew")
         drop.columnconfigure(0, weight=1)
         self.drop_label = Label(drop, relief="ridge", padx=10, pady=12)
         self.drop_label.grid(row=0, column=0, sticky="ew")
@@ -355,8 +383,8 @@ class ResizerApp:
 
         # File List + Scrollbar
         list_frame = Frame(root)
-        list_frame.grid(row=3, column=0, padx=10, pady=6, sticky="nsew")
-        root.rowconfigure(3, weight=1)
+        list_frame.grid(row=4, column=0, padx=10, pady=6, sticky="nsew")
+        root.rowconfigure(4, weight=1)
         root.columnconfigure(0, weight=1)
         self.listbox = Listbox(list_frame, height=10)
         sb = Scrollbar(list_frame, orient="vertical", command=self.listbox.yview)
@@ -368,30 +396,42 @@ class ResizerApp:
 
         # Buttons
         btns = Frame(root)
-        btns.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
+        btns.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
         btns.columnconfigure(0, weight=1)
         self.btn_pick = Button(btns, command=self.pick_files)
         self.btn_pick.pack(side="left")
         self.btn_clear = Button(btns, command=self.clear_files)
         self.btn_clear.pack(side="left", padx=8)
-        self.btn_resize = Button(btns, command=self.resize_and_save)
+        self.btn_resize = Button(
+            btns, 
+            command=self.start_process, 
+            bg="#28a745",    # Ein schönes "Erfolgs-Grün"
+            fg="white",      # Weiße Schrift für besseren Kontrast
+            font=("Arial", 10, "bold") # Etwas dicker, damit er auffällt
+        )
         self.btn_resize.pack(side="right")
 
         # Status
         self.status = Label(root, anchor="w")
-        self.status.grid(row=5, column=0, padx=10, pady=(0,10), sticky="ew")
+        self.status.grid(row=6, column=0, padx=10, pady=(0,10), sticky="ew")
 
         # Sprache anwenden
         self.apply_language()
         save_config({"language": self.lang.get()})
 
     # --- Methoden ---
+    def start_process(self): # NEU: Weiche für Button-Klick
+        if self.mode.get() == "resize":
+            self.resize_and_save()
+        else:
+            self.convert_to_ico(self.files)
+
     def change_language(self, selected_flag):
         code = LANG_OPTIONS[selected_flag]
         self.lang.set(code)
         self.apply_language()
         save_config({"language": code})
-
+        
     def apply_language(self):
         t = STRINGS[self.lang.get()]
         self.root.title(t["title"])
@@ -401,17 +441,49 @@ class ResizerApp:
         self.drop_label.config(text=t["drop_text"])
         self.btn_pick.config(text=t["btn_pick"])
         self.btn_clear.config(text=t["btn_clear"])
-        self.btn_resize.config(text=t["btn_resize"])
         self.status.config(text=t["status_ready"])
         
-        # Namen der Buttons aktualisieren
+        # Radiobuttons übersetzen
+        self.rb_resize.config(text=t["mode_resize"])
+        self.rb_ico.config(text=t["mode_ico"])
+        
+        # Button-Text je nach Modus setzen
+        self.update_button_text() 
+        
         for b, name in zip(self.preset_buttons, t["preset_names"]):
             b.config(text=name)
 
-        # Tooltips aktualisieren
         if hasattr(self, 'tooltips'):
             for tip_obj, new_text in zip(self.tooltips, t["tips"]):
                 tip_obj.update_text(new_text)
+
+    def update_button_text(self):
+        t = STRINGS[self.lang.get()]
+        if self.mode.get() == "resize":
+            self.btn_resize.config(text=t["btn_resize"])
+        else:
+            self.btn_resize.config(text=t["btn_ico"])
+
+    def convert_to_ico(self, file_paths): # NEU: ICO Logik
+        if not file_paths:
+            messagebox.showwarning("Hinweis", "Keine Dateien ausgewählt.")
+            return
+        out_dir = os.path.join(os.path.dirname(file_paths[0]), "converted_icons")
+        os.makedirs(out_dir, exist_ok=True)
+        ico_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+        ok, fail = 0, 0
+        for path in file_paths:
+            try:
+                with Image.open(path) as img:
+                    if img.mode != 'RGBA':
+                        img = img.convert('RGBA')
+                    base_name = os.path.splitext(os.path.basename(path))[0]
+                    output_path = os.path.join(out_dir, f"{base_name}.ico")
+                    img.save(output_path, format='ICO', sizes=ico_sizes)
+                    ok += 1
+            except: fail += 1
+        messagebox.showinfo("Fertig", f"Icons erstellt: {ok}\nFehler: {fail}")
+        os.startfile(out_dir)
 
     def set_status(self, text: str):
         self.status.config(text=text)
@@ -433,7 +505,7 @@ class ResizerApp:
 
     def normalize_dnd_files(self, data: str):
         files = self.root.tk.splitlist(data)
-        return [f.strip() for f in files if os.path.isfile(f.strip())]
+        return [f.strip('{}') for f in files] # {} Fix für Pfade mit Leerzeichen
 
     def add_files(self, paths):
         added = 0
@@ -452,7 +524,11 @@ class ResizerApp:
         if not paths:
             self.set_status("Drop erkannt, aber keine gültigen Dateien gefunden.")
             return
-        self.add_files(paths)
+        
+        if self.mode.get() == "ico": # Direkt-Modus für ICO bei Drop
+            self.convert_to_ico(paths)
+        else:
+            self.add_files(paths)
 
     def pick_files(self):
         paths = filedialog.askopenfilenames(title="Bilder auswählen", filetypes=[("Images", "*.jpg *.jpeg *.png *.webp")])
@@ -484,19 +560,12 @@ class ResizerApp:
                 img = Image.open(f)
                 img = ImageOps.exif_transpose(img)
                 img.thumbnail((max_w, max_h))
-                
                 output_path = os.path.join(out_dir, os.path.basename(f))
-                
-                # OPTIMIERUNG: 
-                # Wir speichern OHNE die alten EXIF-Daten (damit Windows sie neu generieren kann)
-                # und setzen 'keep_rgb', um Farbraum-Probleme zu vermeiden.
                 img.save(output_path, quality=95, subsampling=0, optimize=True)
-                
                 img.close()
                 ok += 1
                 self.set_status(f"Verarbeitet: {ok}/{len(self.files)}")
             except Exception as e:
-                print(f"Fehler bei {f}: {e}") # Das hilft dir beim Debuggen im Terminal
                 fail += 1
         messagebox.showinfo("Fertig", f"Gespeichert in:\n{out_dir}\n\nOK: {ok}\nFehler: {fail}")
         os.startfile(out_dir)
