@@ -1,4 +1,4 @@
-🖼️ Image Resizer Deluxe & ICO Converter
+🖼️ IRDIC - Image Resizer Deluxe & ICO Converter
 Ein schlankes, schnelles Desktop-Tool zum Verkleinern von Bildern und Erstellen von Windows-Icons – entwickelt für den produktiven Einsatz im Büroalltag. Keine Cloud, kein Upload, alles lokal und sicher.
 
 ✨ Highlights
