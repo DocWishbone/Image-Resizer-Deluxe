@@ -86,7 +86,7 @@ from PIL import Image, ImageTk, ImageOps
 
 STRINGS = {
     "de": {
-        "title": f"Bilder verkleinern – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
+        "title": f"IRDIC - Image Resizer Deluxe & Icon Converter v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
         "preset_names": ["📧 Mail", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Druck"],
         "max_width": "Max. Breite:",
