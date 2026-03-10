@@ -6,14 +6,12 @@ import os
 
 def get_version():
     try:
-        # Falls es als EXE läuft, nehmen wir den Dateinamen (z.B. Image_Resizer_v1.4.0.exe)
         exe_name = os.path.basename(sys.executable)
         if "v" in exe_name:
-            # Extrahiert alles nach dem 'v'
             return exe_name.split("_v")[-1].replace(".exe", "")
     except:
         pass
-    return "DEVELOPER-EDITION" # Fallback, falls man das Skript direkt in Python startet
+    return "DEVELOPER-EDITION"
 
 APP_VERSION = get_version()
 APP_AUTHOR = "m. ludwig"
@@ -33,7 +31,7 @@ def check_and_install():
             importlib.import_module(module)
         except ImportError:
             missing.append(package)
-            
+
     if not missing:
         return
 
@@ -41,37 +39,34 @@ def check_and_install():
         from tkinter import Tk, messagebox, Label, Toplevel
         root = Tk()
         root.withdraw()
-        
-        msg = ("Es fehlen folgende Module:\n\n" + 
-               "\n".join(f"• {m}" for m in missing) + 
+
+        msg = ("Es fehlen folgende Module:\n\n" +
+               "\n".join(f"• {m}" for m in missing) +
                "\n\nSollen diese jetzt automatisch installiert werden?")
-        
+
         if not messagebox.askyesno("Installation erforderlich", msg):
             sys.exit()
 
-        # Lade-Fenster
         loading = Toplevel(root)
         loading.title("Bitte warten...")
         loading.geometry("300x100")
-        # Zentrieren
+
         x = (root.winfo_screenwidth() // 2) - 150
         y = (root.winfo_screenheight() // 2) - 50
         loading.geometry(f"+{x}+{y}")
-        
+
         Label(loading, text="\nInstalliere Abhängigkeiten...", font=("Arial", 10, "bold")).pack()
         Label(loading, text="Dies kann einen Moment dauern...").pack()
         loading.update()
 
-        # Installation via Pip
         subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
-        
+
         loading.destroy()
         root.destroy()
 
-        # Neustart FIX: Wir nutzen spawnl statt execl, um Pfadprobleme mit Leerzeichen zu umgehen
         os.spawnl(os.P_WAIT, sys.executable, f'"{sys.executable}"', *sys.argv)
         sys.exit()
-        
+
     except Exception as e:
         print(f"Fehler: {e}")
         sys.exit(1)
@@ -79,8 +74,8 @@ def check_and_install():
 check_and_install()
 
 from tkinter import (
-    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END, 
-    messagebox, Toplevel, StringVar, OptionMenu, Radiobutton # Radiobutton hinzugefügt
+    Tk, Frame, Label, Entry, Button, Listbox, Scrollbar, END,
+    messagebox, Toplevel, StringVar, OptionMenu, Radiobutton
 )
 from tkinter import filedialog
 from PIL import Image
@@ -88,11 +83,12 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 from PIL import Image, ImageTk, ImageOps
 
 # ---------- Strings ----------
+
 STRINGS = {
     "de": {
         "title": f"Bilder verkleinern – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
-        "preset_names": ["Mail", "Social", "Web", "Druck"],
+        "preset_names": ["📧 Mail", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Druck"],
         "max_width": "Max. Breite:",
         "max_height": "Max. Höhe:",
         "mode_resize": "Bilder verkleinern",
@@ -105,16 +101,18 @@ STRINGS = {
         "status_ready": "Bereit.",
         "preset_set": "Preset gesetzt: {w}×{h}",
         "tips": [
-            "Klein für E-Mail/Chat (schnell, wenig MB)",
-            "Instagram & Social Media (typische Kantenlänge)",
-            "Für Webseiten & CMS (gut genug, nicht zu groß)",
-            "Hohe Auflösung (eher für Print/Archiv)"
+            "Klein für E-Mail/Chat",
+            "Instagram & Social Media",
+            "Für Webseiten & CMS",
+            "Optimiert für Smartphone-Displays (1440×2560)",
+            "Hohe Auflösung (Print/Archiv)"
         ]
     },
+
     "en": {
         "title": f"Image Resizer – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Presets:",
-        "preset_names": ["Mail", "Social", "Web", "Print"],
+        "preset_names": ["📧 Mail", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Print"],
         "max_width": "Max width:",
         "max_height": "Max height:",
         "mode_resize": "Resize images",
@@ -130,13 +128,15 @@ STRINGS = {
             "Small for Email/Chat",
             "Instagram & Social Media",
             "For websites & CMS",
+            "Optimized for smartphones (1440×2560)",
             "High resolution (Print/Archive)"
         ]
     },
+
     "ru": {
         "title": f"Изменение размера изображений – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Пресеты:",
-        "preset_names": ["Почта", "Соцсети", "Веб", "Печать"],
+        "preset_names": ["📧 Почта", "📱 Соцсети", "🌐 Веб", "📱 Смартфон", "🖨 Печать"],
         "max_width": "Макс. ширина:",
         "max_height": "Макс. высота:",
         "mode_resize": "Изменить размер",
@@ -150,15 +150,17 @@ STRINGS = {
         "preset_set": "Пресет установлен: {w}×{h}",
         "tips": [
             "Маленький для почты",
-            "Соцсети (Instagram и др.)",
+            "Социальные сети",
             "Для веб-сайтов",
+            "Оптимально для смартфонов (1440×2560)",
             "Высокое качество (печать)"
         ]
     },
+
     "es": {
         "title": f"Redimensionar imágenes – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Ajustes:",
-        "preset_names": ["Correo", "Social", "Web", "Imprimir"],
+        "preset_names": ["📧 Correo", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Imprimir"],
         "max_width": "Ancho máx:",
         "max_height": "Alto máx:",
         "mode_resize": "Redimensionar",
@@ -174,15 +176,17 @@ STRINGS = {
             "Pequeño para correo",
             "Redes sociales",
             "Sitios web",
+            "Optimizado para smartphones (1440×2560)",
             "Alta resolución"
         ]
     },
+
     "fr": {
         "title": f"Redimensionner les images – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
-        "presets": "Préréglages :",
-        "preset_names": ["E-mail", "Social", "Web", "Imprimer"],
-        "max_width": "Largeur max :",
-        "max_height": "Hauteur max :",
+        "presets": "Préréglages:",
+        "preset_names": ["📧 E-mail", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Imprimer"],
+        "max_width": "Largeur max:",
+        "max_height": "Hauteur max:",
         "mode_resize": "Redimensionner",
         "mode_ico": "Créer ICO",
         "drop_text": "📂 Déposez les fichiers ici",
@@ -191,18 +195,20 @@ STRINGS = {
         "btn_resize": "Redimensionner et sauver",
         "btn_ico": "Créer des icônes",
         "status_ready": "Prêt.",
-        "preset_set": "Préréglage défini : {w}×{h}",
+        "preset_set": "Préréglage défini: {w}×{h}",
         "tips": [
             "Petit pour email",
             "Réseaux sociaux",
             "Sites web",
+            "Optimisé pour smartphone (1440×2560)",
             "Haute résolution"
         ]
     },
+
     "it": {
         "title": f"Ridimensiona immagini – Deluxe v{APP_VERSION} - {APP_AUTHOR}",
         "presets": "Predefiniti:",
-        "preset_names": ["Email", "Social", "Web", "Stampa"],
+        "preset_names": ["📧 Email", "📱 Social", "🌐 Web", "📱 Smartphone", "🖨 Stampa"],
         "max_width": "Larghezza max:",
         "max_height": "Altezza max:",
         "mode_resize": "Ridimensiona",
@@ -218,10 +224,31 @@ STRINGS = {
             "Piccolo per email",
             "Social media",
             "Siti web",
+            "Ottimizzato per smartphone (1440×2560)",
             "Alta risoluzione"
         ]
     }
 }
+
+CONFIG_FILE = "config.json"
+
+# ---------- Preset Farben ----------
+PRESET_COLORS = [
+    "#cfe9ff",
+    "#a9d6ff",
+    "#7fbfff",
+    "#4da3ff",
+    "#2d8cff",
+]
+
+# ---------- Preset Werte ----------
+PRESET_VALUES = [
+    (800, 800),       # Mail
+    (1080, 1080),     # Social
+    (1200, 1200),     # Web
+    (1440, 2560),     # Smartphone
+    (3000, 3000)      # Print
+]
 
 CONFIG_FILE = "config.json"
 
@@ -268,14 +295,6 @@ class ToolTip:
         if self.tip:
             self.tip.destroy()
             self.tip = None
-
-# ---------- Preset Farben ----------
-PRESET_COLORS = [
-    "#cfe9ff",
-    "#a9d6ff",
-    "#7fbfff",
-    "#4da3ff",
-]
 
 # ---------- Sprachoptionen ----------
 LANG_OPTIONS = {
@@ -350,7 +369,13 @@ class ResizerApp:
         self.lbl_presets = Label(self.presets_frame)
         self.lbl_presets.pack(side="left", padx=(0,8))
 
-        preset_values = [(800, 800), (1080, 1080), (1200, 1200), (3000, 3000)]
+        preset_values = [
+            (800, 800),      # Mail
+            (1080, 1080),    # Social
+            (1200, 1200),    # Web
+            (1440, 2560),    # Smartphone
+            (3000, 3000)     # Druck
+        ]
 
         self.preset_buttons = []
         for i, ((w, h), color) in enumerate(zip(preset_values, PRESET_COLORS)):
