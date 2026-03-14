@@ -27,13 +27,7 @@ jobs:
         pip install pyinstaller Pillow tkinterdnd2
 
     - name: EXE erstellen
-      run: |
-        python -m PyInstaller --noconsole --onefile --noupx \
-		--collect-all tkinterdnd2 \
-		--collect-all pillow_heif \
-		--name "Image_Resizer_${{ github.ref_name }}" \
-		--icon="app_icon.ico" \
-		Resizer.pyw
+      run: python -m PyInstaller --noconsole --onefile --noupx --collect-all tkinterdnd2 --collect-all pillow_heif --hidden-import pillow_heif --name "Image_Resizer_${{ github.ref_name }}" --icon="app_icon.ico" Resizer.pyw
 
     - name: Release erstellen
       uses: softprops/action-gh-release@v2
