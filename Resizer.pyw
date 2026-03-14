@@ -3,8 +3,6 @@ import importlib
 import subprocess
 import json
 import os
-import pillow_heif
-pillow_heif.register_heif_opener()
 
 def get_version():
     try:
@@ -84,6 +82,8 @@ from tkinter import filedialog
 from PIL import Image
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from PIL import Image, ImageTk, ImageOps
+import pillow_heif
+pillow_heif.register_heif_opener()
 
 # ---------- Strings ----------
 
