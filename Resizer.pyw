@@ -3,6 +3,8 @@ import importlib
 import subprocess
 import json
 import os
+import pillow_heif
+pillow_heif.register_heif_opener()
 
 def get_version():
     try:
@@ -19,6 +21,7 @@ APP_AUTHOR = "m. ludwig"
 REQUIRED = {
     "PIL": "Pillow",
     "tkinterdnd2": "tkinterdnd2",
+    "pillow_heif": "pillow-heif"
 }
 
 def check_and_install():
@@ -98,6 +101,7 @@ STRINGS = {
         "btn_clear": "Liste leeren",
         "btn_resize": "Verkleinern & speichern",
         "btn_ico": "Icons erstellen",
+        "btn_heic": "HEIC -> PNG konvertieren",
         "status_ready": "Bereit.",
         "preset_set": "Preset gesetzt: {w}×{h}",
         "tips": [
@@ -122,6 +126,7 @@ STRINGS = {
         "btn_clear": "Clear list",
         "btn_resize": "Resize & save",
         "btn_ico": "Create Icons",
+        "btn_heic": "Convert HEIC → PNG",
         "status_ready": "Ready.",
         "preset_set": "Preset set: {w}×{h}",
         "tips": [
@@ -146,6 +151,7 @@ STRINGS = {
         "btn_clear": "Очистить список",
         "btn_resize": "Изменить и сохранить",
         "btn_ico": "Создать иконки",
+        "btn_heic": "конвертировать HEIC->PNG",
         "status_ready": "Готово.",
         "preset_set": "Пресет установлен: {w}×{h}",
         "tips": [
@@ -170,6 +176,7 @@ STRINGS = {
         "btn_clear": "Limpiar lista",
         "btn_resize": "Redimensionar y guardar",
         "btn_ico": "Crear iconos",
+        "btn_heic": "convertir HEIC->PNG",
         "status_ready": "Listo.",
         "preset_set": "Ajuste establecido: {w}×{h}",
         "tips": [
@@ -194,6 +201,7 @@ STRINGS = {
         "btn_clear": "Effacer la liste",
         "btn_resize": "Redimensionner et sauver",
         "btn_ico": "Créer des icônes",
+        "btn_heic": "convertir HEIC->PNG",
         "status_ready": "Prêt.",
         "preset_set": "Préréglage défini: {w}×{h}",
         "tips": [
@@ -218,6 +226,7 @@ STRINGS = {
         "btn_clear": "Svuota lista",
         "btn_resize": "Ridimensiona e salva",
         "btn_ico": "Crea icone",
+        "btn_heic": "convertire HEIC->PNG",
         "status_ready": "Pronto.",
         "preset_set": "Predefinito impostato: {w}×{h}",
         "tips": [
@@ -322,7 +331,6 @@ class ResizerApp:
         mode_frame = Frame(self.root)
         mode_frame.grid(row=0, column=0, padx=10, pady=(10,0), sticky="ew")
         
-        # In der __init__
         self.rb_resize = Radiobutton(mode_frame, text="", variable=self.mode, 
                                     value="resize", font=("Arial", 10), 
                                     command=self.update_button_text) # Command hinzugefügt
@@ -332,6 +340,16 @@ class ResizerApp:
                                  value="ico", font=("Arial", 10), 
                                  command=self.update_button_text) # Command hinzugefügt
         self.rb_ico.pack(side="left", padx=10)
+        
+        self.rb_heic = Radiobutton(
+            mode_frame,
+            text="HEIC → PNG",
+            variable=self.mode,
+            value="heic",
+            font=("Arial", 10),
+            command=self.update_button_text
+        )
+        self.rb_heic.pack(side="left", padx=10)
 
         # Top Inputs
         top = Frame(root)
@@ -445,11 +463,13 @@ class ResizerApp:
         save_config({"language": self.lang.get()})
 
     # --- Methoden ---
-    def start_process(self): # NEU: Weiche für Button-Klick
+    def start_process(self):
         if self.mode.get() == "resize":
             self.resize_and_save()
-        else:
+        elif self.mode.get() == "ico":
             self.convert_to_ico(self.files)
+        elif self.mode.get() == "heic":
+            self.convert_heic_to_png(self.files)
 
     def change_language(self, selected_flag):
         code = LANG_OPTIONS[selected_flag]
@@ -484,16 +504,28 @@ class ResizerApp:
 
     def update_button_text(self):
         t = STRINGS[self.lang.get()]
+
         if self.mode.get() == "resize":
             self.btn_resize.config(text=t["btn_resize"])
+
             # Presets und Eingabefelder aktivieren
-            self.presets_frame.grid() 
+            self.presets_frame.grid()
             self.width_entry.config(state="normal")
             self.height_entry.config(state="normal")
-        else:
+
+        elif self.mode.get() == "ico":
             self.btn_resize.config(text=t["btn_ico"])
+
             # Presets verstecken und Eingabefelder ausgrauen
-            self.presets_frame.grid_remove() 
+            self.presets_frame.grid_remove()
+            self.width_entry.config(state="disabled")
+            self.height_entry.config(state="disabled")
+
+        elif self.mode.get() == "heic":
+            self.btn_resize.config(text=t["btn_heic"])
+
+            # Presets verstecken und Eingabefelder ausgrauen
+            self.presets_frame.grid_remove()
             self.width_entry.config(state="disabled")
             self.height_entry.config(state="disabled")
 
@@ -516,6 +548,29 @@ class ResizerApp:
                     ok += 1
             except: fail += 1
         messagebox.showinfo("Fertig", f"Icons erstellt: {ok}\nFehler: {fail}")
+        os.startfile(out_dir)
+        
+    def convert_heic_to_png(self, file_paths):
+        if not file_paths:
+            messagebox.showwarning("Hinweis", "Keine Dateien ausgewählt.")
+            return
+
+        out_dir = os.path.join(os.path.dirname(file_paths[0]), "converted_png")
+        os.makedirs(out_dir, exist_ok=True)
+
+        ok, fail = 0, 0
+
+        for path in file_paths:
+            try:
+                with Image.open(path) as img:
+                    base_name = os.path.splitext(os.path.basename(path))[0]
+                    output_path = os.path.join(out_dir, f"{base_name}.png")
+                    img.save(output_path, "PNG")
+                    ok += 1
+            except Exception:
+                fail += 1
+
+        messagebox.showinfo("Fertig", f"PNG erstellt: {ok}\nFehler: {fail}")
         os.startfile(out_dir)
 
     def set_status(self, text: str):
@@ -546,7 +601,7 @@ class ResizerApp:
             p = os.path.abspath(p)
             if p not in self.files:
                 ext = os.path.splitext(p)[1].lower()
-                if ext in [".jpg", ".jpeg", ".png", ".webp"]:
+                if ext in [".jpg", ".jpeg", ".png", ".webp", ".heic"]:
                     self.files.append(p)
                     self.listbox.insert(END, p)
                     added += 1
@@ -564,7 +619,7 @@ class ResizerApp:
             self.add_files(paths)
 
     def pick_files(self):
-        paths = filedialog.askopenfilenames(title="Bilder auswählen", filetypes=[("Images", "*.jpg *.jpeg *.png *.webp")])
+        paths = filedialog.askopenfilenames(title="Bilder auswählen", filetypes=[("Images", "*.jpg *.jpeg *.png *.webp *.heic")])
         if paths:
             self.add_files(paths)
 

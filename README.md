@@ -1,12 +1,12 @@
 🖼️ IRDIC - Image Resizer Deluxe & ICO Converter
-Ein schlankes, schnelles Desktop-Tool zum Verkleinern von Bildern und Erstellen von Windows-Icons – entwickelt für den produktiven Einsatz im Büroalltag. Keine Cloud, kein Upload, alles lokal und sicher.
+Ein schlankes, schnelles Desktop-Tool zum Verkleinern von Bildern und Erstellen von Windows-Icons, UPDATE: HEIC->PNG Konverter – entwickelt für den produktiven Einsatz im Büroalltag. Keine Cloud, kein Upload, alles lokal und sicher.
 
 ✨ Highlights
 📂 Drag & Drop Support: Ziehe eine oder hunderte Dateien direkt ins Fenster.
 
 🎯 Smart Presets: Vordefinierte Größen für Mail, Social Media, Web und Druck (inkl. hilfreicher Tooltips).
 
-🛠️ 2-in-1 Tool: Umschaltbar zwischen Bild-Resizer und professionellem ICO-Konverter.
+🛠️ 3-in-1 Tool: Umschaltbar zwischen Bild-Resizer und professionellem ICO-Konverter und NEU: Apple HEIC -> PNG Konverter
 
 📦 Multi-Size ICOs: Erstellt Icons, die alle Windows-Standardgrößen enthalten (16px bis 256px) – für knackscharfe Icons in jeder Ansicht.
 
